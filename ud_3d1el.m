@@ -212,6 +212,34 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
 %
 	DEFL=[]; REACT=[]; ELE_FOR=[];
 %
+%   Printing variables per Interim Assignment 1
+    nnodes
+    coord(i,1:3)
+    coord(i,1:6)
+    fixity(i,1:6)
+    nele
+    ends(i,1:14)
+    A(i)
+    Izz(i)
+    Iyy(i)
+    J(i)
+    Cw(i)
+    Zzz(i)
+    Zyy(i)
+    Ayy(i)
+    Azz(i)
+    E(i)
+    v(i)
+    Fy(i)
+    YldSurf(i)
+    Wt(i)
+    webdir(i,1:3)
+    beta_ang(i)
+    w(i,1:3)
+    thermal(i,1:4)
+    truss
+    anatype
+%   End of printing variables
 	AFLAG = inf;
 %
 %  STUDENT NOTE:
