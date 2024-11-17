@@ -1,2 +1,2 @@
-# CEE-235A-Programing-Assignment
+# CEE-235A-Programming-Assignment
 Anthony Fung &amp; Kenneth Nguyen
