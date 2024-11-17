@@ -58,8 +58,16 @@ function [elk] = AFKN_estiff (A, Izz, Iyy, J, Ayy, Azz, E, v, L)
     elk(6,2)=elk_ben_tor_1;
     elk(8,12)=-elk_ben_tor_1;
     elk(12,8)=-elk_ben_tor_1;
+    elk(6,8)=-elk_ben_tor_1;
+    elk(8,6)=-elk_ben_tor_1;
+    elk(2,12)=elk_ben_tor_1;
+    elk(12,2)=elk_ben_tor_1;
     elk(3,5)=-elk_ben_tor_2;
     elk(5,3)=-elk_ben_tor_2;
     elk(9,11)=elk_ben_tor_2;
     elk(11,9)=elk_ben_tor_2;
+    elk(9,5)=elk_ben_tor_2;
+    elk(5,9)=elk_ben_tor_2;
+    elk(3,11)=-elk_ben_tor_2;
+    elk(11,3)=-elk_ben_tor_2;
 end
