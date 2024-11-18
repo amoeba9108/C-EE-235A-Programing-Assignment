@@ -2,7 +2,7 @@ function [gamma] = AFKN_etran (coordi, coordj, webdir)
 % Initialize gamma matrix
 gamma=zeros(12,12);
 % Calculate length of element
-L=sqrt( (coordj(1)-coordi(1))^2 + (coordj(2)-coordj(2))^2 + (coordj(3)-coordi(3))^2 );
+L=sqrt( (coordj(1)-coordi(1))^2 + (coordj(2)-coordi(2))^2 + (coordj(3)-coordi(3))^2 );
 %% Projection of X' axis onto global axes
 % Projection of x' onto x
 lambdax=(coordj(1) - coordi(1)) / L;
