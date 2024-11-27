@@ -240,6 +240,16 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
             memb_id(i,j+6)=(endNodeNumber-1)*6+j;
         end
     end
+
+    % Create array of DOF loads
+    dof_load=zeros(nnodes,6);
+    % Assign applied load to dof
+    for i=1 to nnodes
+        for j=1 to 6
+            %   Assign force/moment to node's direction/axis
+            nodeDOFs(i,j)=concen(i,j);
+        end
+    end
 %
 %
 %  Good luck CE Student!!!
