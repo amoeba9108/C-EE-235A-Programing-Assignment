@@ -212,34 +212,6 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
 %
 	DEFL=[]; REACT=[]; ELE_FOR=[];
 %
-%   Printing variables per Interim Assignment 1
-    nnodes
-    coord(i,1:3)
-    coord(i,1:6)
-    fixity(i,1:6)
-    nele
-    ends(i,1:14)
-    A(i)
-    Izz(i)
-    Iyy(i)
-    J(i)
-    Cw(i)
-    Zzz(i)
-    Zyy(i)
-    Ayy(i)
-    Azz(i)
-    E(i)
-    v(i)
-    Fy(i)
-    YldSurf(i)
-    Wt(i)
-    webdir(i,1:3)
-    beta_ang(i)
-    w(i,1:3)
-    thermal(i,1:4)
-    truss
-    anatype
-%   End of printing variables
 	AFLAG = inf;
 %
 %  STUDENT NOTE:
@@ -249,6 +221,25 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
 %
 %  Student's code starts here...
 %
+    nodeDOFs=zeros(nnodes,6);
+    for i=1 to nnodes
+        for j=1 to 6
+            %   Assign the node DOFs
+            nodeDOFs(i,j)=(i-1)*6+j;
+        end
+    end
+
+    memb_id=zeros(nele,12);
+    for i=1 to nele
+        %   Extract node numbers for element i
+        startNodeNumber=ends(i,1);
+        endNodeNumber=ends(i,2);
+        for j=1 to 6
+            %   Assign the DOFs for the start and end node of element i
+            memb_id(i,j)=(startNodeNumber-1)*6+j;
+            memb_id(i,j+6)=(endNodeNumber-1)*6+j;
+        end
+    end
 %
 %
 %  Good luck CE Student!!!
