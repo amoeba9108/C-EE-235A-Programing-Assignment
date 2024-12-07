@@ -221,35 +221,33 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
 %
 %  Student's code starts here...
 %
+    %   Array that numbers the DOFs
     nodeDOFs=zeros(nnodes,6);
-    for i=1 to nnodes
-        for j=1 to 6
-            %   Assign the node DOFs
+    for i=1:nnodes
+        for j=1:6
             nodeDOFs(i,j)=(i-1)*6+j;
         end
     end
-
+    
+    %   Array that links nodeDOFs to each element/member
     memb_id=zeros(nele,12);
-    for i=1 to nele
-        %   Extract node numbers for element i
-        startNodeNumber=ends(i,1);
-        endNodeNumber=ends(i,2);
-        for j=1 to 6
-            %   Assign the DOFs for the start and end node of element i
-            memb_id(i,j)=(startNodeNumber-1)*6+j;
-            memb_id(i,j+6)=(endNodeNumber-1)*6+j;
+    for i=1:nele
+        %   Extract start & end node numbers for element i
+        startNode=ends(i,1);
+        endNode=ends(i,2);
+        for j=1:6
+            %   Pull nodeDOFs for the start and end node of element i
+            memb_id(i,j)=nodeDOFs(startNode,j);
+            memb_id(i,j+6)=nodeDOFs(endNode,j);
         end
     end
 
-    % Create array of DOF loads
-    dof_load=zeros(nnodes,6);
-    % Assign applied load to dof
-    for i=1 to nnodes
-        for j=1 to 6
-            %   Assign force/moment to node's direction/axis
-            nodeDOFs(i,j)=concen(i,j);
-        end
+    %   Array of concentrated and distributed loads
+    appliedNodalLoads=zeros(1,numel(nodeDOFs));
+    for i=1:nnodes
+        appliedNodalLoads((i-1)*6+1:i*6)=concen(i,1:6);
     end
+
 %
 %
 %  Good luck CE Student!!!
