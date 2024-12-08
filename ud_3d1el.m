@@ -242,11 +242,53 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
         end
     end
 
-    %   Array of concentrated and distributed loads
-    appliedNodalLoads=zeros(1,numel(nodeDOFs));
+    %   Array of concentrated loads
+    appliedNodalLoads=zeros(numel(nodeDOFs),1);
     for i=1:nnodes
         appliedNodalLoads((i-1)*6+1:i*6)=concen(i,1:6);
     end
+    
+    %   Transpose the fixity array to a column vector
+    D=transpose(fixity);
+    D=D(:);
+
+    %   Create index vectors for free, supported & displaced DOFs
+    freeDOFs=find(isnan(D));
+    supportedDOFs=find(D==0);
+    displacedDOFs=find(D~=0 && ~isnan(D));
+
+    %   Initialize FEF vector
+    FEF=zeros(numel(nodeDOFs),1);
+    for i=1:nele
+        L=sqrt((coord(ends(i,2),1)-coord(ends(i,1),1))^2+(coord(ends(i,2),2)-coord(ends(i,1),2))^2+(coord(ends(i,2),3)-coord(ends(i,1),3))^2);
+        memberLocalFEF=computeMemberFEFs(w(i,2),L);
+        gamma=AFKN_etran(coord(ends(i,1),:),coord(ends(i,2),:),webdir(i,:));
+        memberGlobalFEF=gamma'*memberLocalFEF;
+        FEF(memb_id(i,:),1)=memberGlobalFEF+FEF(memb_id(i,:),1);
+    end
+    
+    %   Construct Structure Stiffness Matrix
+    k_structure_global=zeros(numel(nodeDOFs),numel(nodeDOFs));
+    for i=1:nele
+        L=sqrt((coord(ends(i,2),1)-coord(ends(i,1),1))^2+(coord(ends(i,2),2)-coord(ends(i,1),2))^2+(coord(ends(i,2),3)-coord(ends(i,1),3))^2);        
+        k_ele_local=AFKN_estiff(A(i),Izz(i),Iyy(i),J(i),Ayy(i),Azz(i),E(i),v(i),L);
+        gamma=AFKN_etran(coord(ends(i,1),:),coord(ends(i,2),:),webdir(i,:));
+        k_ele_global=gamma'*k_ele_local*gamma;
+        k_structure_global(memb_id(i,:),memb_id(i,:))=k_ele_global+k_structure_global(memb_id(i,:),memb_id(i,:));
+    end
+
+    %   Extract Kff, Kfn, Ksf, Ksn, Knn, & Knf
+    Kff=k_structure_global(freeDOFs,freeDOFs);
+    Kfn=k_structure_global(freeDOFs,displacedDOFs);
+    Ksf=k_structure_global(supportedDOFs,freeDOFs);
+    Ksn=k_structure_global(supportedDOFs,displacedDOFs);
+    Knn=k_structure_global(displacedDOFs,displacedDOFs);
+    Knf=k_structure_global(displacedDOFs,freeDOFs);
+
+
+    %   Extract Pf
+    Pf=appliedNodalLoads(freeDOFs);
+
 
 %
 %
