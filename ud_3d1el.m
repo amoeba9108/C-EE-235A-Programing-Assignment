@@ -212,7 +212,7 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
 %
 	DEFL=[]; REACT=[]; ELE_FOR=[];
 %
-	AFLAG = 1;
+	%AFLAG = 1;
 %
 %  STUDENT NOTE:
 %     In order for this routine to become fully active AFLAG
@@ -351,6 +351,7 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
         FEFlocal=computeMemberFEFs(w(i,2),L);
         ELE_FOR(i,:)=elk*dLocal+FEFlocal;
     end
+    AFLAG = 1;
 end
 %
 %
