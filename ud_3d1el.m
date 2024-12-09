@@ -212,7 +212,7 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
 %
 	DEFL=[]; REACT=[]; ELE_FOR=[];
 %
-	%AFLAG = inf;
+	AFLAG = 1;
 %
 %  STUDENT NOTE:
 %     In order for this routine to become fully active AFLAG
