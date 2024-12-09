@@ -303,7 +303,7 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
     
     Ff=Pf-FEFf;
     % Solve for Df
-    if isempty(dispDof)
+    if isempty(displacedDOFs)
         Df = Kff\Ff;
     else
         Df = Kff\(Ff-Kfn*Dn);
