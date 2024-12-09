@@ -348,7 +348,7 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
         gamma=AFKN_etran(coord(ends(i,1),:),coord(ends(i,2),:),webdir(i,:));
         dGlobal=displacement(memb_id(i,:),1);
         dLocal=gamma*dGlobal;
-        FEFlocal=computeMemberFEFs(w(i,:),L(i));
+        FEFlocal=computeMemberFEFs(w(i,2),L(i));
         ELE_FOR(i,:)=elk*dLocal+FEFlocal;
     end
 end
