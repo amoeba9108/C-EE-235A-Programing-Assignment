@@ -212,7 +212,7 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
 %
 	DEFL=[]; REACT=[]; ELE_FOR=[];
 %
-	AFLAG = inf;
+	%AFLAG = inf;
 %
 %  STUDENT NOTE:
 %     In order for this routine to become fully active AFLAG
@@ -255,7 +255,13 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
     %   Create index vectors for free, supported & displaced DOFs
     freeDOFs=find(isnan(D));
     supportedDOFs=find(D==0);
-    displacedDOFs=find(D~=0 && ~isnan(D));
+    displacedDOFs=[];
+    for i = 1:size(D)
+        if(D(i) ~= 0 && ~ isnan(D(i)))
+            displacedDOFs(end+1) = i;
+        end
+    end
+
 
     %   Initialize FEF vector
     FEF=zeros(numel(nodeDOFs),1);
