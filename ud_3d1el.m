@@ -284,12 +284,63 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
     Ksn=k_structure_global(supportedDOFs,displacedDOFs);
     Knn=k_structure_global(displacedDOFs,displacedDOFs);
     Knf=k_structure_global(displacedDOFs,freeDOFs);
-
+    
 
     %   Extract Pf
     Pf=appliedNodalLoads(freeDOFs);
+    
+    % Extract Dn
+    Dn=D(displacedDOFs);
 
+    % Extract FEFf
+    FEFf=FEF(freeDOFs);
 
+    % Solve for Df
+    Df=(Kff)^-1*(Pf-FEFf-Kfn-Dn);
+    
+    % Validate
+    resFf = Kff*Df;
+
+    if isempty(displacedDOFs)
+        Fs=FEF(supportedDOFs)+Ksf*Df;
+        Fn=[];
+    else
+        Fs=FEF(supportedDOFs)+Ksf*Df+Ksn*Dn;
+        Fn=FEF(displacedDOFs)+Knf*Df+Knn*Dn;
+    end
+    
+    displacement=zeros(numel(nodeDOFs),1);
+    displacement(freeDOFs)=Df;
+    displacement(displacedDOFs)=Dn+displacement(displacedDOFs);
+    displacementT=displacement.';
+    DEFL=zeros(nnodes,6);
+    for i=1:nnodes
+        DEFL(i,:)=displacementT((i-1)*6+1:(i)*6);
+    end
+
+    REACT = zeros(nnodes,6);
+    reactions = zeros(6*nnodes,1);
+    reactions(supportedDOFs) = Fs;
+    if ~isempty(displacedDOFs)
+        reactions(displacedDOFs) = Fn;
+    end
+    
+    reactionsT = reactions.';
+    for i = 1:nnodes
+        REACT(i,:) = reactionsT((i-1)*6+1:(i)*6);
+    end
+
+    ELE_FOR=zeros(nele,12);
+    for i = 1:nele
+        L=sqrt((coord(ends(i,2),1)-coord(ends(i,1),1))^2+(coord(ends(i,2),2)-coord(ends(i,1),2))^2+(coord(ends(i,2),3)-coord(ends(i,1),3))^2);                
+        elk=AFKN_estiff(A(i),Izz(i),Iyy(i),J(i),Ayy(i),Azz(i),E(i),v(i),L);
+        gamma=AFKN_etran(coord(ends(i,1),:),coord(ends(i,2),:),webdir(i,:));
+        dGlobal=displacement(memb_id(i,:),1);
+        dLocal=gamma*dGlobal;
+        FEFlocal=computeMemberFEFs(w(i,:),L(i));
+        ELE_FOR(i,:)=elk*dLocal+FEFlocal;
+    end
+end
 %
 %
 %  Good luck CE Student!!!
