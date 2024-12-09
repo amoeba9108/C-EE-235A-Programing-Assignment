@@ -300,9 +300,14 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
 
     % Extract FEFf
     FEFf=FEF(freeDOFs);
-
+    
+    Ff=Pf-FEFf;
     % Solve for Df
-    Df=(Kff)^-1*(Pf-FEFf-Kfn-Dn);
+    if isempty(dispDof)
+        Df = Kff\Ff;
+    else
+        Df = Kff\(Ff-Kfn*Dn);
+    end
     
     % Validate
     resFf = Kff*Df;
