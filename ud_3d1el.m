@@ -212,7 +212,7 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
 %
 	DEFL=[]; REACT=[]; ELE_FOR=[];
 %
-	%AFLAG = 1;
+	AFLAG = 1;
 %
 %  STUDENT NOTE:
 %     In order for this routine to become fully active AFLAG
@@ -221,6 +221,7 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
 %
 %  Student's code starts here...
 %
+    clc
     %   Array that numbers the DOFs
     nodeDOFs=zeros(nnodes,6);
     for i=1:nnodes
@@ -262,12 +263,18 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
         end
     end
 
-
+    % Create the length vector for all elements
+    L = zeros(nele,1);
+    for i = 1:nele
+        startN = ends(i,1);
+        endN = ends(i,2);
+        L(i) = norm(coord(startN,:)-coord(endN,:));
+    end
+    
     %   Initialize FEF vector
     FEF=zeros(numel(nodeDOFs),1);
     for i=1:nele
-        L=sqrt((coord(ends(i,2),1)-coord(ends(i,1),1))^2+(coord(ends(i,2),2)-coord(ends(i,1),2))^2+(coord(ends(i,2),3)-coord(ends(i,1),3))^2);
-        memberLocalFEF=computeMemberFEFs(w(i,2),L);
+        memberLocalFEF=computeMemberFEFs(w(i,:),L(i));
         gamma=AFKN_etran(coord(ends(i,1),:),coord(ends(i,2),:),webdir(i,:));
         memberGlobalFEF=gamma'*memberLocalFEF;
         FEF(memb_id(i,:),1)=memberGlobalFEF+FEF(memb_id(i,:),1);
@@ -276,8 +283,7 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
     %   Construct Structure Stiffness Matrix
     k_structure_global=zeros(numel(nodeDOFs),numel(nodeDOFs));
     for i=1:nele
-        L=sqrt((coord(ends(i,2),1)-coord(ends(i,1),1))^2+(coord(ends(i,2),2)-coord(ends(i,1),2))^2+(coord(ends(i,2),3)-coord(ends(i,1),3))^2);        
-        k_ele_local=AFKN_estiff(A(i),Izz(i),Iyy(i),J(i),Ayy(i),Azz(i),E(i),v(i),L);
+        k_ele_local=AFKN_estiff(A(i),Izz(i),Iyy(i),J(i),Ayy(i),Azz(i),E(i),v(i),L(i));
         gamma=AFKN_etran(coord(ends(i,1),:),coord(ends(i,2),:),webdir(i,:));
         k_ele_global=gamma'*k_ele_local*gamma;
         k_structure_global(memb_id(i,:),memb_id(i,:))=k_ele_global+k_structure_global(memb_id(i,:),memb_id(i,:));
@@ -343,15 +349,13 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
 
     ELE_FOR=zeros(nele,12);
     for i = 1:nele
-        L=sqrt((coord(ends(i,2),1)-coord(ends(i,1),1))^2+(coord(ends(i,2),2)-coord(ends(i,1),2))^2+(coord(ends(i,2),3)-coord(ends(i,1),3))^2);                
-        elk=AFKN_estiff(A(i),Izz(i),Iyy(i),J(i),Ayy(i),Azz(i),E(i),v(i),L);
+        elk=AFKN_estiff(A(i),Izz(i),Iyy(i),J(i),Ayy(i),Azz(i),E(i),v(i),L(i));
         gamma=AFKN_etran(coord(ends(i,1),:),coord(ends(i,2),:),webdir(i,:));
         dGlobal=displacement(memb_id(i,:),1);
         dLocal=gamma*dGlobal;
-        FEFlocal=computeMemberFEFs(w(i,2),L);
+        FEFlocal=computeMemberFEFs(w(i,:),L(i));
         ELE_FOR(i,:)=elk*dLocal+FEFlocal;
     end
-    AFLAG = 1;
 end
 %
 %
