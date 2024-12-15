@@ -221,7 +221,7 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
 %
 %  Student's code starts here...
 %
-    clc
+    
     %   Array that numbers the DOFs
     nodeDOFs=zeros(nnodes,6);
     for i=1:nnodes
@@ -272,7 +272,7 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
     end
     
     %   Initialize FEF vector
-    FEF=zeros(numel(nodeDOFs),1);
+    FEF=zeros(6*nnodes,1);
     for i=1:nele
         memberLocalFEF=computeMemberFEFs(w(i,:),L(i));
         gamma=AFKN_etran(coord(ends(i,1),:),coord(ends(i,2),:),webdir(i,:));
@@ -281,14 +281,14 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
     end
     
     %   Construct Structure Stiffness Matrix
-    k_structure_global=zeros(numel(nodeDOFs),numel(nodeDOFs));
+    k_structure_global=zeros(6*nnodes,6*nnodes);
     for i=1:nele
         k_ele_local=AFKN_estiff(A(i),Izz(i),Iyy(i),J(i),Ayy(i),Azz(i),E(i),v(i),L(i));
         gamma=AFKN_etran(coord(ends(i,1),:),coord(ends(i,2),:),webdir(i,:));
         k_ele_global=gamma'*k_ele_local*gamma;
         k_structure_global(memb_id(i,:),memb_id(i,:))=k_ele_global+k_structure_global(memb_id(i,:),memb_id(i,:));
     end
-
+    
     %   Extract Kff, Kfn, Ksf, Ksn, Knn, & Knf
     Kff=k_structure_global(freeDOFs,freeDOFs);
     Kfn=k_structure_global(freeDOFs,displacedDOFs);
@@ -308,6 +308,7 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
     FEFf=FEF(freeDOFs);
     
     Ff=Pf-FEFf;
+    
     % Solve for Df
     if isempty(displacedDOFs)
         Df = Kff\Ff;
@@ -326,7 +327,7 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
         Fn=FEF(displacedDOFs)+Knf*Df+Knn*Dn;
     end
     
-    displacement=zeros(numel(nodeDOFs),1);
+    displacement=zeros(6*nnodes,1);
     displacement(freeDOFs)=Df;
     displacement(displacedDOFs)=Dn+displacement(displacedDOFs);
     displacementT=displacement.';
@@ -334,7 +335,7 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
     for i=1:nnodes
         DEFL(i,:)=displacementT((i-1)*6+1:(i)*6);
     end
-
+    
     REACT = zeros(nnodes,6);
     reactions = zeros(6*nnodes,1);
     reactions(supportedDOFs) = Fs;
