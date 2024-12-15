@@ -263,12 +263,12 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
         end
     end
 
-    % Create the length vector for all elements
-    L = zeros(nele,1);
+    %   Create the length vector for all elements
+    L=zeros(nele,1);
     for i = 1:nele
-        startN = ends(i,1);
-        endN = ends(i,2);
-        L(i) = norm(coord(startN,:)-coord(endN,:));
+        startN=ends(i,1);
+        endN=ends(i,2);
+        L(i)=norm(coord(startN,:)-coord(endN,:));
     end
     
     %   Initialize FEF vector
@@ -301,23 +301,27 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
     %   Extract Pf
     Pf=appliedNodalLoads(freeDOFs);
     
-    % Extract Dn
+    %   Extract Dn
     Dn=D(displacedDOFs);
 
-    % Extract FEFf
+    %   Extract FEFf
     FEFf=FEF(freeDOFs);
     
     Ff=Pf-FEFf;
     
-    % Solve for Df
+    %   Solve for Df
     if isempty(displacedDOFs)
-        Df = Kff\Ff;
+        Df=Kff\Ff;
     else
-        Df = Kff\(Ff-Kfn*Dn);
+        Df=Kff\(Ff-Kfn*Dn);
     end
     
-    % Validate
-    resFf = Kff*Df;
+    %   Validate
+    resFf=Kff*Df;
+    if resFf==Ff
+        disp("Ff is correct.")
+    end
+
 
     if isempty(displacedDOFs)
         Fs=FEF(supportedDOFs)+Ksf*Df;
@@ -343,13 +347,13 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
         reactions(displacedDOFs) = Fn;
     end
     
-    reactionsT = reactions.';
-    for i = 1:nnodes
+    reactionsT=reactions.';
+    for i=1:nnodes
         REACT(i,:) = reactionsT((i-1)*6+1:(i)*6);
     end
 
     ELE_FOR=zeros(nele,12);
-    for i = 1:nele
+    for i=1:nele
         elk=AFKN_estiff(A(i),Izz(i),Iyy(i),J(i),Ayy(i),Azz(i),E(i),v(i),L(i));
         gamma=AFKN_etran(coord(ends(i,1),:),coord(ends(i,2),:),webdir(i,:));
         dGlobal=displacement(memb_id(i,:),1);
