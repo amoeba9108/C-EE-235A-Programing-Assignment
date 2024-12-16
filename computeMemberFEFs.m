@@ -10,7 +10,7 @@ function [memFEF] = computeMemberFEFs(w,L)
     memFEF(12)=w(2)*L^2/12;
     %   Z direction FEFs
     memFEF(3)=-w(3)*L/2;
-    memFEF(5)=-w(3)*L^2/12;
+    memFEF(11)=-w(3)*L^2/12;
     memFEF(9)=-w(3)*L/2;
-    memFEF(11)=w(3)*L^2/12;
+    memFEF(5)=w(3)*L^2/12;
 end

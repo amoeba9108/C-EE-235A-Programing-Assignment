@@ -296,7 +296,6 @@ function [DEFL,REACT,ELE_FOR,AFLAG] = ud_3d1el(...
     Ksn=k_structure_global(supportedDOFs,displacedDOFs);
     Knn=k_structure_global(displacedDOFs,displacedDOFs);
     Knf=k_structure_global(displacedDOFs,freeDOFs);
-    
 
     %   Extract Pf
     Pf=appliedNodalLoads(freeDOFs);

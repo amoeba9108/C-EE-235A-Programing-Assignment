@@ -10,7 +10,7 @@ function [elk] = AFKN_estiff (A, Izz, Iyy, J, Ayy, Azz, E, v, L)
 %   Define axial stiffness elements
     elk_axial=E*A/L;
 %   Define torsional stiffness elements
-    elk_torsion=J/(G*L);
+    elk_torsion=J*G/L;
 %   Define y-z plane flexural stiffness elements
     elk_flex_y=12*beta1/L^2;
     elk_flex_z=12*beta2/L^2;
