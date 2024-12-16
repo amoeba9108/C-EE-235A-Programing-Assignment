@@ -1,4 +1,6 @@
 function [elk] = AFKN_estiff (A, Izz, Iyy, J, Ayy, Azz, E, v, L)
+%   The purpose of this function is to setup the local stiffness matrix of
+%   a member elemnt which accounts for shear deformations.
 %   Initialize elk matrix
     elk=zeros(12,12);
 %   Setup intermediate calculations for shear deformations

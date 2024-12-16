@@ -1,4 +1,7 @@
 function [memFEF] = computeMemberFEFs(w,L)
+%   The purpose of this function is to compute a vector of fixed end
+%   forces on a member element, given a matrix of uniformly distributed
+%   load data in the x, y, z directions.
     memFEF=zeros(12,1);
     %   X direction FEFs
     memFEF(1)=-w(1)*L/2;
